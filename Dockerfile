@@ -1,0 +1,23 @@
+ARG PYTHON_VERSION=3.8
+
+FROM python:${PYTHON_VERSION} AS bulider
+
+WORKDIR /app
+
+COPY requirements.txt .
+COPY . .
+
+RUN pip install -r requirements.txt --target /app/packages
+ENV PYTHONPATH=/app/packages
+RUN python manage.py migrate
+
+FROM python:${PYTHON_VERSION}
+
+WORKDIR /app
+
+COPY --from=bulider /app /app
+
+EXPOSE 8080
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
