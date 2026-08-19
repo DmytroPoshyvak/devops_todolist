@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.8
 
-FROM python:${PYTHON_VERSION} AS bulider
+FROM python:${PYTHON_VERSION} AS builder
 
 WORKDIR /app
 
@@ -15,9 +15,11 @@ FROM python:${PYTHON_VERSION}
 
 WORKDIR /app
 
-COPY --from=bulider /app /app
+COPY --from=builder /app /app
+
+ENV PYTHONPATH=/app/packages
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8080
-ENV PYTHONUNBUFFERED=1
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
